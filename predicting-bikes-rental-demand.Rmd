@@ -50,69 +50,13 @@ summary(bikes_hours)
 
 
 
-# Create interactive time series plots
-
-```{r}
-## Read about the timetk package
-# ?timetk
-
-
-```
-
-
-
-
-# Smooth time series data
+# Create interactive plots
 
 ```{r}
 
-```
 
-
-
-# Decompse and access the stationarity of time series data
-
-```{r}
 
 ```
-
-
-
-# Fit and forecast time series data using ARIMA models
-
-```{r}
-
-```
-
-
-
-# Findings and Conclusions
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
