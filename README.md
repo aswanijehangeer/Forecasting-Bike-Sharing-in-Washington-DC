@@ -1,8 +1,8 @@
 ### Work in Progress...
 
-# Forecasting-Bike-Sharing-in-Washington-DC
+# Predicting-Bike-Sharing-in-Washington-DC-Ridge-and-Lasso
 
-Conducting a time series data analysis to forecast future rental bike demands.
+Conducting a predictive data analysis to predict future rental bike demands.
 
 In this project, I have used a data set containing the hourly and daily count of rental bikes between the years 2011 and 2012 in the Capital bike share system in Washington, DC, with the corresponding weather and seasonal information from Kaggle.
 
