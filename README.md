@@ -1,5 +1,3 @@
-### Work in Progress...
-
 # Predicting-Bike-Sharing-in-Washington-DC-Ridge-and-Lasso
 
 Conducting a predictive data analysis to predict future rental bike demands.
