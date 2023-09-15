@@ -1,4 +1,4 @@
-# Predicting-Bike-Sharing-in-Washington-DC-Ridge-and-Lasso
+# Predict Bike Sharing Demand in DC (Poisson and Negative Bionomial)
 
 Conducting a predictive data analysis to predict future rental bike demands.
 
