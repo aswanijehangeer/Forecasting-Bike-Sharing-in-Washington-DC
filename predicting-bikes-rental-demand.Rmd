@@ -1,8 +1,10 @@
 ---
-title: "Forecast daily bike rental demand using time series models"
+title: "Predicting Bike Shares Demand with Ridge and Lasso"
 date: "`r Sys.Date()`"
 output: html_document
 author: "Jehangeer!"
+message: false
+warning: false
 ---
 
 # About Data Analysis Report
@@ -26,39 +28,139 @@ Fanaee-T, Hadi, and Gama, Joao, 'Event labeling combining ensemble detectors and
 ## Load data and install packages
 
 ```{r}
+
+
 ## Importing required packages
 
 # install.packages("tidyverse")
+# install.packages("tidymodels")
 
 library(tidyverse)
+library(tidymodels)
 
-bikes_day <- read_csv("bike-sharing-dataset/day.csv")
 bikes_hours <- read_csv("bike-sharing-dataset/hour.csv")
 
-summary(bikes_day)
-summary(bikes_hours)
+glimpse(bikes_hours)
 
+
+# theme set
+
+theme_set(theme_minimal(base_size = 12, base_family = "Open Sans"))
 
 ```
+
+## Which factors contribute to bike rental demand?
+
+Here are the objectives of doing the advanced analysis on bike rental demand: 
+
+Attain superior accuracy in predicting bike rental demand.
+
+Investigate whether a noteworthy correlation exists between the season and the bike rental demand.
+
+Gain insights into how bike rental demand varies across different time segments within a day.
+
+Determine the relationship between bike rental demand and prevailing weather conditions.
 
 
 ## Describe and explore the data
 
 ```{r}
+# first six observations of the datasets
+
+head(bikes_hours)
+
+# checking missing values
+sum(is.na(bikes_hours))
+
+# summary statistics
+summary(bikes_hours)
 
 ```
 
-
-
-# Create interactive plots
+Here, a distinct dataframe is established to maintain data integrity, enabling easy adjustments without reloading the original dataset. This new dataframe excludes 'instant' and 'dteday' variables, as they hold no predictive value.
 
 ```{r}
+# Constructing a 'bike_data' dataframe with organized data attributes
 
+bike_data <-  data.frame(count = bikes_hours$cnt,
+                         season = as.factor(bikes_hours$season), 
+                         year = as.factor(bikes_hours$yr),
+                         month = as.factor(bikes_hours$mnth),
+                         hour = as.factor(bikes_hours$hr),
+                         holi = as.factor(bikes_hours$holiday),
+                         week = as.factor(bikes_hours$weekday),
+                         work = as.factor(bikes_hours$workingday),
+                         weather = as.factor(bikes_hours$weathersit),
+                         env.temp = bikes_hours$temp,
+                         feel.temp = bikes_hours$atemp,
+                         humidity = bikes_hours$hum,
+                         windspeed = bikes_hours$windspeed,
+                         registered = bikes_hours$registered,
+                         casual = bikes_hours$casual)
+
+# Column names
+names(bike_data)
+
+# Glimpse of new data
+glimpse(bike_data)
+
+# Distribution of response variable.
+
+bike_data |> 
+  ggplot(aes(x = count)) +
+  geom_histogram() +
+  labs(title = "Distriution of Count")
+
+```
+
+We are considering the use of a Poisson regression model because our response variable consists of discrete numeric values, although they are no any non-negative integers, and response variable follows poisson distribution.
+
+```{r}
+# Fit a Poisson regression model
+poisson_model <- glm(count ~ ., 
+             data = bike_data, 
+             family = "poisson")
+
+summary(poisson_model)
+
+# Checking over dispersion
+
+# install.packages("AER")
+
+library(AER)
+
+dispersion_test <- dispersiontest(poisson_model)
+print(dispersion_test)
 
 
 ```
 
+The p-value is very close to zero (p-value < 2.2e-16), indicating that the true dispersion is significantly greater than 1.
+
+Based on these results, we should consider using an alternative modeling approach that can account for over dispersion.
+
+Negative Binomial Regression: This model is suitable for count data with overdispersion and can be a good choice in this situation.
+
+```{r}
+# install.packages("MASS")
+
+library(MASS)
+
+model_nb <- glm.nb(count ~ ., data = bike_data)
+
+summary(model_nb)
+
+```
+
+This Negative Binomial regression model provides insights into the factors that influence bike rentals. Predictor variables as season, year, month, hour, weather conditions, and environmental factors all play a significant role in determining the number of bike rentals. Variables, like hour and temperature, have a particularly strong impact, while others, like holidays, have a less pronounced effect.
 
 
+```{r}
+# Calculating the AIC
+aic_value <- AIC(model_nb)
 
+# AIC value
+aic_value
+```
 
+The model's AIC value of approximately 179,577.1 indicates a reasonable trade-off between goodness of fit and model complexity, suggesting its suitability for predicting bike rentals. However, further model refinement and evaluation against alternative models may be necessary to optimize performance.
